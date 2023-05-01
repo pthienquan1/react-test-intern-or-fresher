@@ -1,0 +1,27 @@
+.layoutAdmin-container{
+  
+}
+.layoutAD{
+    height: 100vh;
+    
+}
+.adName{
+    color: #fff;
+    text-align: center;
+    padding:30px 0 25px;   
+    font-weight: bold;
+}
+.dropdown-menu{
+    position: absolute;
+    right:35px;
+    top:35px;
+}
+.admin-header{
+    padding-bottom: 30px;
+}
+.admin-header span .trigger:first-child svg {
+    margin-top:20px;
+    margin-left:20px;
+    font-size: 1.8rem;
+    
+}

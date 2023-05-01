@@ -1,2 +1,6 @@
-# react-test-intern-or-fresher
-The project for apply intern or fresher FE
+*** Base React Test Intern / Fresher***
+
+- React 18
+- React Router 6
+- Redux Tookit
+- Vite 4

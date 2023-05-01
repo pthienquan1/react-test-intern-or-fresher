@@ -1,0 +1,21 @@
+.login-container h1{
+  text-align: center;
+  color: #05bfdb;
+  font-size: 2.5em;
+  margin-top:40px;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+.login-container{
+    margin-top: 140px;
+    background-color: transparent;
+    /* border:1px solid snow; */
+    width: 40%;
+    margin:0 auto;
+    border-radius: 10px;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
+    padding: 10px 0px 10px 0px;
+}
+.form-login{
+    margin-left:150px;
+}

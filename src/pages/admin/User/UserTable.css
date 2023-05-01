@@ -1,0 +1,39 @@
+.admin-container {
+    display: flex;
+    margin-left: 20px;
+    margin-right: 20px;
+    flex-wrap: wrap;
+    padding-bottom: 50px;
+    background-color: #E3DFFD;
+  }
+  .admin-input {
+    padding: 30px;
+    flex-grow: 3;
+  }
+  .admin-input input {
+    min-width: 300px;
+    border-radius: 5px;
+    border: 1px solid #A9907E;
+    padding:8px;
+  }
+  .admin-input h2 {
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  .admin-container button {
+    position: absolute;
+    right: 0;
+    margin-top: 100px;
+    margin-right: 120px;
+    padding: 8px 25px 8px 25px;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    cursor: pointer;
+    background-color: #19a7ce;
+    color: #fff;
+    font-weight: bold;
+  }
+  .admin-container button:hover {
+    opacity: 0.7;
+  }
+  
