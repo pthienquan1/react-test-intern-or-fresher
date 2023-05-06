@@ -24,7 +24,7 @@
     position: absolute;
     right: 0;
     margin-top: 100px;
-    margin-right: 120px;
+    margin-right: 230px;
     padding: 8px 25px 8px 25px;
     border-radius: 5px;
     border: 1px solid #fff;
@@ -32,8 +32,14 @@
     background-color: #19a7ce;
     color: #fff;
     font-weight: bold;
+    
   }
   .admin-container button:hover {
     opacity: 0.7;
   }
   
+  .admin-container .clear{
+    margin-right: 120px;
+    padding: 8px 30px 8px 30px;
+    background-color: #F7D060;
+  }

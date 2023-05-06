@@ -4,49 +4,73 @@ import React, { useEffect, useState } from "react";
 import "./UserTable.css";
 import { current } from "@reduxjs/toolkit";
 import { callFetchAccount, callFetchListUser } from "../../../services/api";
+import { FaTrash } from "react-icons/fa";
+import './UserViewDetail';
+import UserViewDetail from "./UserViewDetail";
 
-const columns = [
-  {
-    title: "ID",
-    dataIndex: "_id",
-    width: "20%",
-  },
-  {
-    title: "Tên hiển thị",
-    dataIndex: "fullName",
 
-    width: "20%",
-  },
-  {
-    title: "Email",
-    dataIndex: "email",
-  },
-  {
-    title: "Số điện thoại",
-    dataIndex: "phone",
-  },
-  {
-    title: "Action",
-    render: (text, record, index) => {
-      return (
-        <>
-          <button>Delete</button>
-        </>
-      );
+const UserTable = (props) => {
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "_id",
+      width: "20%",
+      render:(text,record, index) =>{
+        return (
+          <a href="#" onClick={() =>{
+            setDataViewDetail(record);
+            setOpenViewDetail(true);
+          }}>{record._id}</a>
+        )
+      }
     },
-  },
-];
+    {
+      title: "Tên hiển thị",
+      dataIndex: "fullName",
+      onFilter: (value, record) => record.fullName.indexOf(value) === 0,
+      sorter: (a, b) => a.fullName.length - b.fullName.length,
+      sortDirections: ['descend'],
+  
+      width: "20%",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      onFilter: (value, record) => record.email.indexOf(value) === 0,
+      sorter: (a, b) => a.email.length - b.email.length,
+      sortDirections: ['descend'],
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phone",
+    },
+    {
+      title: "Action",
+      render: (text, record, index) => {
+        return (
+          <>
+            <FaTrash style={{color:"red",marginLeft:"20px", cursor:"pointer"}}/>
+          </>
+        );
+      },
+    },
+  ];
 
-const UserTable = () => {
   const [listUser, setListUser] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(3);
+  const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-
+  const [dataViewDetail,setDataViewDetail] = useState("")
+  const [openViewDetail, setOpenViewDetail] = useState(false);
+  const onClear = () => {
+    setName("");
+    setEmail("");
+    setPhone("");
+  }
   const fetchUsers = async (searchFilter) => {
     setIsLoading(true);
 
@@ -144,9 +168,15 @@ const UserTable = () => {
           ></input>
         </div>
 
+        <div className="btn-container">
         <button type="submit" onClick={onFinish}>
           Search
         </button>
+        <button type="submit" className="clear" onClick={onClear}>
+          Clear
+        </button>
+        </div>
+        
       </div>
 
       <Table
@@ -162,6 +192,12 @@ const UserTable = () => {
           showSizeChanger: true,
           total: total,
         }}
+      />
+      <UserViewDetail 
+        openViewDetail ={openViewDetail}
+        setOpenViewDetail ={setOpenViewDetail}
+        dataViewDetail = {dataViewDetail}
+        setDataViewDetail ={setDataViewDetail}
       />
     </>
   );
