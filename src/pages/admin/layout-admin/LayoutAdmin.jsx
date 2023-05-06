@@ -63,11 +63,12 @@ const LayoutAdmin = () => {
     const user = useSelector(state => state.account.user);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const isAuthenticated = useSelector(state => state.account.isAuthenticated);
 
     const handleLogout = async () =>{
         const res = await callLogout();
         if(res.data && res){
-            dispatch(doLogoutAction)
+            dispatch(doLogoutAction())
             message.success('Đăng xuất thành công')
             navigate('/')
         }
@@ -118,6 +119,10 @@ const LayoutAdmin = () => {
                             onClick: () => setCollapsed(!collapsed),
                         })}
                     </span>
+                    
+      {!isAuthenticated ? 
+        <span onClick={() => navigate("/login")}> Tài Khoản</span>
+       : 
                     <Dropdown className='dropdown-menu' menu={{ items: itemsDropdown }} trigger={['click']}>
                         <a onClick={(e) => e.preventDefault()}>
                             <Space>
@@ -126,9 +131,10 @@ const LayoutAdmin = () => {
                             </Space>
                         </a>
                     </Dropdown>
+      }
                 </div>
                 <Content>
-                    <Outlet />
+                    <Outlet />  
                 </Content>
                 <Footer style={{ padding: "20px", textAlign:"center" }}>
                     React Test Fresher &copy; Thiên Quân- Made with <HeartTwoTone />

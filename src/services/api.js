@@ -17,9 +17,10 @@ export const callFetchAccount = () => {
   return axios.get("/api/v1/auth/account");
 };
 
+
 export const callLogout = () => {
-  return axios.post("/api/v1/auth/logout");
-};
+  return axios.post('/api/v1/auth/logout')
+}
 
 export const callFetchListUser = (query) =>{
   return axios.get(`/api/v1/user?${query}`)
