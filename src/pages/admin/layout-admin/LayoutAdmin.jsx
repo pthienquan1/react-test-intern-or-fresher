@@ -23,7 +23,7 @@ const {Content, Footer,  Sider} = Layout;
 
 const items = [
     {
-        label: <Link to='/admin'>Dashboard</Link>,
+        label: <Link to='/admin/user'>Dashboard</Link>,
         key: 'dashboard',
         icon: <AppstoreOutlined />
     },
@@ -33,7 +33,7 @@ const items = [
         icon: <UserOutlined />,
         children: [
             {
-                label: <Link to='/admin/user'>CRUD</Link>,
+                label: <Link to='/admin'>CRUD</Link>,
                 key: 'crud',
                 icon: <TeamOutlined />,
             },

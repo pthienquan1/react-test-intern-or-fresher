@@ -1,5 +1,5 @@
 import "./UserTable.css";
-import { Table, Row, Col } from "antd";
+import { Table, Row, Col, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import "./UserTable.css";
 import { current } from "@reduxjs/toolkit";
@@ -7,6 +7,7 @@ import { callFetchAccount, callFetchListUser } from "../../../services/api";
 import { FaTrash } from "react-icons/fa";
 import './UserViewDetail';
 import UserViewDetail from "./UserViewDetail";
+import { CloudUploadOutlined, ExportOutlined, PlusOutlined } from "@ant-design/icons";
 
 
 const UserTable = (props) => {
@@ -135,6 +136,21 @@ const UserTable = (props) => {
     }
     setIsLoading(false);
   };
+
+  const renderHeader = () =>{
+    return(
+      <div style={{display:"flex", justifyContent:"space-between"}}>
+        <span >Table list user</span>
+        <span style={{display:"flex", gap:15}}>
+          <Button icon={<ExportOutlined/>} type ="primary">Export </Button>
+          {/* onClick={() => handleExportData()} */}
+          <Button icon={<CloudUploadOutlined/>} type ="primary">Import </Button>
+          <Button icon={<PlusOutlined/>} type ="primary" >Thêm mới </Button>
+          {/* onClick={() =>setOpenModalCreate(true)} */}
+        </span>
+      </div>
+    )
+  }
   return (
     <>
       <div className="admin-container">
@@ -180,6 +196,7 @@ const UserTable = (props) => {
       </div>
 
       <Table
+      title={renderHeader}
         className="def"
         columns={columns}
         dataSource={listUser}
@@ -191,6 +208,7 @@ const UserTable = (props) => {
           pageSize: pageSize,
           showSizeChanger: true,
           total: total,
+          showTotal: (total,range) => { return (<div>{range[0]}-{range[1]} trên {total} bản ghi</div>)}
         }}
       />
       <UserViewDetail 

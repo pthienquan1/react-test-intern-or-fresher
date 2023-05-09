@@ -9,9 +9,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { callLogout } from "../../services/api";
 import { doLogoutAction } from "../../redux/account/accountSlice";
-
+import { Link } from "react-router-dom";
+import { UserOutlined } from "@ant-design/icons";
 const Header = () => {
-  const itemsHeader = [
+  const user = useSelector((state) => state.account.user);
+  let itemsHeader = [
     {
       label: <label style={{ cursor: "pointer" }}>Quản lý tài khoản</label>,
       key: "account",
@@ -25,6 +27,16 @@ const Header = () => {
       key: "logout",
     },
   ];
+  if (user?.role === "ADMIN") {
+    itemsHeader.unshift({
+      label: <Link to="/admin">Trang quản trị</Link>,
+      key: "admin",
+    });
+  }
+
+  const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${
+    user?.avatar
+  }`;
 
   const itemsHeaderAnonymous = [
     {
@@ -47,8 +59,6 @@ const Header = () => {
       key: "register",
     },
   ];
-
-  const user = useSelector((state) => state.account.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
@@ -65,7 +75,7 @@ const Header = () => {
   return (
     <div className="header-container">
       <div className="header-logo">
-        <img src={logo} />
+        <img src={logo} style={{ marginLeft: "20px"}}/>
         <p>BookStore</p>
       </div>
 
@@ -116,12 +126,10 @@ const Header = () => {
           menu={{ items: itemsHeader }}
           trigger={["click"]}
         >
-          <a onClick={(e) => e.preventDefault()}>
-            <div style={{ cursor: "pointer" }}>
-              Welcome {user?.fullName}
-              <DownOutlined />
-            </div>
-          </a>
+           <Space size={16} wrap style={{marginTop:"-20px"}}>
+    <Avatar size={64} src={urlAvatar} />
+    {user?.fullName}
+    </Space>
         </Dropdown>
       )}
     </div>

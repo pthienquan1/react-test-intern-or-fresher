@@ -51,7 +51,7 @@ table {
     object-fit: cover;
     height: 70px;
    
-   margin-left: 20px;
+  
 }
 .header-container p{
     margin-left: 20px;
@@ -71,10 +71,11 @@ table {
     font-size: 1.1rem;
 }
 
-.menu-dropdown{
-    margin-top:32px;
-   
+.dropdown-menu{
+ 
     cursor: pointer;
     position: absolute;
-    right:90px;
+ 
 }
+
+    
