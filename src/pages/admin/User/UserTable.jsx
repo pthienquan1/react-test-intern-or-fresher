@@ -8,9 +8,16 @@ import { FaTrash } from "react-icons/fa";
 import './UserViewDetail';
 import UserViewDetail from "./UserViewDetail";
 import { CloudUploadOutlined, ExportOutlined, PlusOutlined } from "@ant-design/icons";
-
+import UserModelCreate from "./UserModelCreate";
 
 const UserTable = (props) => {
+  const [openModalCreate, setOpenModalCreate] = useState(false);
+
+  const handleOpenModalCreate = () => {
+    setOpenModalCreate(true);
+  };
+
+
   const columns = [
     {
       title: "ID",
@@ -145,7 +152,8 @@ const UserTable = (props) => {
           <Button icon={<ExportOutlined/>} type ="primary">Export </Button>
           {/* onClick={() => handleExportData()} */}
           <Button icon={<CloudUploadOutlined/>} type ="primary">Import </Button>
-          <Button icon={<PlusOutlined/>} type ="primary" >Thêm mới </Button>
+          <Button icon={<PlusOutlined/>} type ="primary" onClick={handleOpenModalCreate}>Thêm mới</Button>
+      <UserModelCreate openModalCreate={openModalCreate} setOpenModalCreate={setOpenModalCreate} />
           {/* onClick={() =>setOpenModalCreate(true)} */}
         </span>
       </div>
@@ -217,6 +225,13 @@ const UserTable = (props) => {
         dataViewDetail = {dataViewDetail}
         setDataViewDetail ={setDataViewDetail}
       />
+
+<UserModelCreate
+  openModalCreate={openModalCreate}
+  setOpenModalCreate={setOpenModalCreate}
+  fetchUser={fetchUser}
+/>
+      
     </>
   );
 };
