@@ -28,6 +28,7 @@ const Header = () => {
     },
   ];
   if (user?.role === "ADMIN") {
+    console.log(user.role)
     itemsHeader.unshift({
       label: <Link to="/admin">Trang quản trị</Link>,
       key: "admin",

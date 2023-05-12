@@ -9,14 +9,18 @@ import './UserViewDetail';
 import UserViewDetail from "./UserViewDetail";
 import { CloudUploadOutlined, ExportOutlined, PlusOutlined } from "@ant-design/icons";
 import UserModelCreate from "./UserModelCreate";
+import UserImport from "./UserImport";
 
 const UserTable = (props) => {
   const [openModalCreate, setOpenModalCreate] = useState(false);
-
+  const [ openModalCreateImport, setOpenModalCreateImport ] = useState(false);
   const handleOpenModalCreate = () => {
     setOpenModalCreate(true);
   };
 
+  const handleOpenModalCreateImport = () =>{
+    setOpenModalCreateImport(true);
+  }
 
   const columns = [
     {
@@ -151,9 +155,11 @@ const UserTable = (props) => {
         <span style={{display:"flex", gap:15}}>
           <Button icon={<ExportOutlined/>} type ="primary">Export </Button>
           {/* onClick={() => handleExportData()} */}
-          <Button icon={<CloudUploadOutlined/>} type ="primary">Import </Button>
+          <Button icon={<CloudUploadOutlined/>} type ="primary" onClick={handleOpenModalCreateImport}>Import </Button>
+          <UserImport openModalCreateImport={openModalCreateImport} setOpenModalCreateImport={setOpenModalCreateImport}/>
           <Button icon={<PlusOutlined/>} type ="primary" onClick={handleOpenModalCreate}>Thêm mới</Button>
       <UserModelCreate openModalCreate={openModalCreate} setOpenModalCreate={setOpenModalCreate} />
+      
           {/* onClick={() =>setOpenModalCreate(true)} */}
         </span>
       </div>
