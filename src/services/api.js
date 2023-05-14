@@ -32,3 +32,14 @@ export const callCreateUser = (fullName, password, email, phone) =>{
 export const callBulkCreateUsers = (data) =>{
   return axios.post('/api/v1/user/bulk-create', data);
 }
+export const callUpdateUser = (_id, fullName, phone,avatar ) =>{
+  return axios.put('/api/v1/user', {_id, fullName, phone, avatar })
+    .then(response => {
+      // Xử lý response nếu cần
+      return response.data;
+    })
+    .catch(error => {
+      // Xử lý error nếu cần
+      throw error;
+    });
+}

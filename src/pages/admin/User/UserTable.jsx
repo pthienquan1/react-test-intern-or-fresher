@@ -5,44 +5,58 @@ import "./UserTable.css";
 import { current } from "@reduxjs/toolkit";
 import { callFetchAccount, callFetchListUser } from "../../../services/api";
 import { FaTrash } from "react-icons/fa";
-import './UserViewDetail';
+import "./UserViewDetail";
 import UserViewDetail from "./UserViewDetail";
-import { CloudUploadOutlined, ExportOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  CloudUploadOutlined,
+  ExportOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import UserModelCreate from "./UserModelCreate";
 import UserImport from "./UserImport";
-
+import moment from "moment";
+import * as XLSX from "xlsx";
+import { BsPencilFill } from "react-icons/bs";
+import UserUpdate from "./UserUpdate";
 const UserTable = (props) => {
   const [openModalCreate, setOpenModalCreate] = useState(false);
-  const [ openModalCreateImport, setOpenModalCreateImport ] = useState(false);
+  const [openModalCreateImport, setOpenModalCreateImport] = useState(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState(false);
+  const [dataUpdate, setDataUpdate] = useState(null);
   const handleOpenModalCreate = () => {
     setOpenModalCreate(true);
   };
 
-  const handleOpenModalCreateImport = () =>{
+  const handleOpenModalCreateImport = () => {
     setOpenModalCreateImport(true);
-  }
+  };
 
   const columns = [
     {
       title: "ID",
       dataIndex: "_id",
       width: "20%",
-      render:(text,record, index) =>{
+      render: (text, record, index) => {
         return (
-          <a href="#" onClick={() =>{
-            setDataViewDetail(record);
-            setOpenViewDetail(true);
-          }}>{record._id}</a>
-        )
-      }
+          <a
+            href="#"
+            onClick={() => {
+              setDataViewDetail(record);
+              setOpenViewDetail(true);
+            }}
+          >
+            {record._id}
+          </a>
+        );
+      },
     },
     {
       title: "Tên hiển thị",
       dataIndex: "fullName",
       onFilter: (value, record) => record.fullName.indexOf(value) === 0,
       sorter: (a, b) => a.fullName.length - b.fullName.length,
-      sortDirections: ['descend'],
-  
+      sortDirections: ["descend"],
+
       width: "20%",
     },
     {
@@ -50,18 +64,34 @@ const UserTable = (props) => {
       dataIndex: "email",
       onFilter: (value, record) => record.email.indexOf(value) === 0,
       sorter: (a, b) => a.email.length - b.email.length,
-      sortDirections: ['descend'],
+      sortDirections: ["descend"],
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
     },
     {
+      title: "Ngày cập nhật",
+      dataIndex: "createdAt",
+      render: (createdAt) => moment(createdAt).format("YYYY-MM-DD HH:mm:ss"),
+    },
+    {
       title: "Action",
       render: (text, record, index) => {
         return (
           <>
-            <FaTrash style={{color:"red",marginLeft:"20px", cursor:"pointer"}}/>
+            <FaTrash
+              style={{ color: "red", marginLeft: "20px", cursor: "pointer" }}
+            />
+            <BsPencilFill
+              style={{ color: "blue", marginLeft: "20px", cursor: "pointer" }}
+              onClick={() => {
+                setOpenModalUpdate(true);
+                setDataUpdate(record);
+              }}
+            />
+            
+           
           </>
         );
       },
@@ -76,13 +106,13 @@ const UserTable = (props) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [dataViewDetail,setDataViewDetail] = useState("")
+  const [dataViewDetail, setDataViewDetail] = useState("");
   const [openViewDetail, setOpenViewDetail] = useState(false);
   const onClear = () => {
     setName("");
     setEmail("");
     setPhone("");
-  }
+  };
   const fetchUsers = async (searchFilter) => {
     setIsLoading(true);
 
@@ -148,23 +178,63 @@ const UserTable = (props) => {
     setIsLoading(false);
   };
 
-  const renderHeader = () =>{
-    return(
-      <div style={{display:"flex", justifyContent:"space-between"}}>
-        <span >Table list user</span>
-        <span style={{display:"flex", gap:15}}>
-          <Button icon={<ExportOutlined/>} type ="primary">Export </Button>
-          {/* onClick={() => handleExportData()} */}
-          <Button icon={<CloudUploadOutlined/>} type ="primary" onClick={handleOpenModalCreateImport}>Import </Button>
-          <UserImport openModalCreateImport={openModalCreateImport} setOpenModalCreateImport={setOpenModalCreateImport}/>
-          <Button icon={<PlusOutlined/>} type ="primary" onClick={handleOpenModalCreate}>Thêm mới</Button>
-      <UserModelCreate openModalCreate={openModalCreate} setOpenModalCreate={setOpenModalCreate} />
+  const handleExportData = () => {
+    if (listUser.length > 0) {
+      const worksheet = XLSX.utils.json_to_sheet(listUser);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "ExportFile.xlsx");
+    }
+  };
+  const renderHeader = () => {
+    return (
       
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <span>Table list user</span>
+        <span style={{ display: "flex", gap: 15 }}>
+          <Button
+            icon={<ExportOutlined />}
+            type="primary"
+            onClick={() => handleExportData()}
+          >
+            Export{" "}
+          </Button>
+
+          <Button
+            icon={<CloudUploadOutlined />}
+            type="primary"
+            onClick={handleOpenModalCreateImport}
+          >
+            Import{" "}
+          </Button>
+          <UserImport
+            openModalCreateImport={openModalCreateImport}
+            setOpenModalCreateImport={setOpenModalCreateImport}
+          />
+          <Button
+            icon={<PlusOutlined />}
+            type="primary"
+            onClick={handleOpenModalCreate}
+          >
+            Thêm mới
+          </Button>
+          <UserModelCreate
+            openModalCreate={openModalCreate}
+            setOpenModalCreate={setOpenModalCreate}
+          />
+          <UserUpdate
+        openModalUpdate={openModalUpdate}
+        setOpenModalUpdate={setOpenModalUpdate}
+        dataUpdate={dataUpdate}
+        setDataUpdate={setDataUpdate}
+        fetchUsers={fetchUsers}
+      />
+
           {/* onClick={() =>setOpenModalCreate(true)} */}
         </span>
       </div>
-    )
-  }
+    );
+  };
   return (
     <>
       <div className="admin-container">
@@ -199,18 +269,17 @@ const UserTable = (props) => {
         </div>
 
         <div className="btn-container">
-        <button type="submit" onClick={onFinish}>
-          Search
-        </button>
-        <button type="submit" className="clear" onClick={onClear}>
-          Clear
-        </button>
+          <button type="submit" onClick={onFinish}>
+            Search
+          </button>
+          <button type="submit" className="clear" onClick={onClear}>
+            Clear
+          </button>
         </div>
-        
       </div>
 
       <Table
-      title={renderHeader}
+        title={renderHeader}
         className="def"
         columns={columns}
         dataSource={listUser}
@@ -222,22 +291,27 @@ const UserTable = (props) => {
           pageSize: pageSize,
           showSizeChanger: true,
           total: total,
-          showTotal: (total,range) => { return (<div>{range[0]}-{range[1]} trên {total} bản ghi</div>)}
+          showTotal: (total, range) => {
+            return (
+              <div>
+                {range[0]}-{range[1]} trên {total} bản ghi
+              </div>
+            );
+          },
         }}
       />
-      <UserViewDetail 
-        openViewDetail ={openViewDetail}
-        setOpenViewDetail ={setOpenViewDetail}
-        dataViewDetail = {dataViewDetail}
-        setDataViewDetail ={setDataViewDetail}
+      <UserViewDetail
+        openViewDetail={openViewDetail}
+        setOpenViewDetail={setOpenViewDetail}
+        dataViewDetail={dataViewDetail}
+        setDataViewDetail={setDataViewDetail}
       />
 
-<UserModelCreate
-  openModalCreate={openModalCreate}
-  setOpenModalCreate={setOpenModalCreate}
-  fetchUser={fetchUser}
-/>
-      
+      <UserModelCreate
+        openModalCreate={openModalCreate}
+        setOpenModalCreate={setOpenModalCreate}
+        fetchUser={fetchUser}
+      />
     </>
   );
 };

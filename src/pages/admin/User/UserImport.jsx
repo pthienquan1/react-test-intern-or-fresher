@@ -15,7 +15,7 @@ import {
 
 import * as XLSX from 'xlsx';
 import { callBulkCreateUsers } from "../../../services/api";
-
+import templateFile from './test.xlsx?url'
 
 const UserImport = (props) => {
 
@@ -42,8 +42,8 @@ const UserImport = (props) => {
       props.fetchUser();
     }
     else{
-      notification:({
-        description: res.message,
+      notification.error({
+        description : res.message,
         message:"có lỗi sẩy ra"
       })
 
@@ -121,6 +121,7 @@ const propsUpload = {
           <p className="ant-upload-hint">
             Support for a single or bulk upload. Strictly prohibited from
             uploading company data or other banned files.
+            &nbsp; <a onClick={e => e.stopPropagation()} href={templateFile} download>Download Sample File</a>
           </p>
         </Dragger>
         <div style={{ paddingTop: 20 }}>
