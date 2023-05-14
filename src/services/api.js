@@ -43,3 +43,7 @@ export const callUpdateUser = (_id, fullName, phone,avatar ) =>{
       throw error;
     });
 }
+
+export const callDeleteUser =(_id) =>{
+  return axios.delete(`/api/v1/user/${_id}`)
+}

@@ -1,9 +1,21 @@
 import "./UserTable.css";
-import { Table, Row, Col, Button } from "antd";
+import {
+  Table,
+  Row,
+  Col,
+  Button,
+  Popconfirm,
+  message,
+  notification,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import "./UserTable.css";
 import { current } from "@reduxjs/toolkit";
-import { callFetchAccount, callFetchListUser } from "../../../services/api";
+import {
+  callDeleteUser,
+  callFetchAccount,
+  callFetchListUser,
+} from "../../../services/api";
 import { FaTrash } from "react-icons/fa";
 import "./UserViewDetail";
 import UserViewDetail from "./UserViewDetail";
@@ -31,6 +43,18 @@ const UserTable = (props) => {
     setOpenModalCreateImport(true);
   };
 
+  const handleDeleteUser = async (_id) => {
+    const res = await callDeleteUser(_id);
+    if (res ) {
+      message.success("Xóa thành công");
+      fetchUsers();
+    } else {
+      notification({
+        message: "Có lỗi sẩy ra",
+        description: res.message,
+      });
+    }
+  };
   const columns = [
     {
       title: "ID",
@@ -80,9 +104,19 @@ const UserTable = (props) => {
       render: (text, record, index) => {
         return (
           <>
-            <FaTrash
-              style={{ color: "red", marginLeft: "20px", cursor: "pointer" }}
-            />
+            <Popconfirm
+              placement="rightTop"
+              title={"Xác nhận xóa người dùng"}
+              description={"Bạn có chắc chắn muốn xóa người dùng này không?"}
+              onConfirm={() => handleDeleteUser(record._id)}
+              okText="Xóa"
+              cancelText="Quay lại"
+            >
+              <span style={{ marginLeft: "20px", cursor: "pointer" }}>
+                <FaTrash style={{ color: "red" }} />
+              </span>
+            </Popconfirm>
+
             <BsPencilFill
               style={{ color: "blue", marginLeft: "20px", cursor: "pointer" }}
               onClick={() => {
@@ -90,8 +124,6 @@ const UserTable = (props) => {
                 setDataUpdate(record);
               }}
             />
-            
-           
           </>
         );
       },
@@ -188,7 +220,6 @@ const UserTable = (props) => {
   };
   const renderHeader = () => {
     return (
-      
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <span>Table list user</span>
         <span style={{ display: "flex", gap: 15 }}>
@@ -223,12 +254,12 @@ const UserTable = (props) => {
             setOpenModalCreate={setOpenModalCreate}
           />
           <UserUpdate
-        openModalUpdate={openModalUpdate}
-        setOpenModalUpdate={setOpenModalUpdate}
-        dataUpdate={dataUpdate}
-        setDataUpdate={setDataUpdate}
-        fetchUsers={fetchUsers}
-      />
+            openModalUpdate={openModalUpdate}
+            setOpenModalUpdate={setOpenModalUpdate}
+            dataUpdate={dataUpdate}
+            setDataUpdate={setDataUpdate}
+            fetchUsers={fetchUsers}
+          />
 
           {/* onClick={() =>setOpenModalCreate(true)} */}
         </span>
