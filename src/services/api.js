@@ -29,3 +29,6 @@ export const callFetchListUser = (query) =>{
 export const callCreateUser = (fullName, password, email, phone) =>{
   return axios.post('/api/v1/user',{ fullName, password, email, phone });
 }
+export const callBulkCreateUsers = (data) =>{
+  return axios.post('/api/v1/user/bulk-create', data);
+}

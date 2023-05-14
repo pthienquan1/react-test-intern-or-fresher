@@ -14,6 +14,7 @@ import {
 } from "antd";
 
 import * as XLSX from 'xlsx';
+import { callBulkCreateUsers } from "../../../services/api";
 
 
 const UserImport = (props) => {
@@ -24,6 +25,31 @@ const UserImport = (props) => {
 
   const { Dragger } = Upload;
 
+
+  const handleSubmit = async () =>{
+    const data = dataExcel.map(item => {
+      item.password = '123456'
+      return item;
+    })
+    const res = await callBulkCreateUsers(data)
+    if(res && res.data){
+      notification.success({
+        description:`Success: ${res.data.countSuccess}, Error: ${res.data.countError}`,
+        message: 'Upload thành công'
+      })
+      setDataExcel([])
+      setOpenModalCreateImport(false)
+      props.fetchUser();
+    }
+    else{
+      notification:({
+        description: res.message,
+        message:"có lỗi sẩy ra"
+      })
+
+    }
+
+  }
 const dummyRequest = ({ file, onSuccess }) => {
   setTimeout(() => {
     onSuccess("ok");
@@ -73,11 +99,17 @@ const propsUpload = {
       <Modal
         title="Import user"
         open={openModalCreateImport}
-        onOk={() => setOpenModalCreateImport(false)}
+        onOk={() => handleSubmit()}
         onText={"Tạo mới"}
         cancelText={"Hủy"}
-        onCancel={() => setOpenModalCreateImport(false)}
+        onCancel={() => { setOpenModalCreateImport(false);
+         setDataExcel([]); }}
         confirmLoading={isSubmitImport}
+        width={700}
+        style={{top:20}}
+        okButtonProps={{
+          disabled: dataExcel.length < 1
+        }}
       >
         <Dragger {...propsUpload}>
           <p className="ant-upload-drag-icon">
