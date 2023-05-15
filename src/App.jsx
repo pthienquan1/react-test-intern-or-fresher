@@ -26,6 +26,7 @@ import Error from "./pages/error/Error";
 import Admin from "./pages/admin/Admin";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import LayoutAdmin from "./pages/admin/layout-admin/LayoutAdmin";
+import ManageBook from "./pages/admin/ManageBook/ManageBook";
 
 
 // const LayoutAdmin = () =>{
@@ -88,7 +89,7 @@ export default function App() {
         },
         {
           path: "book",
-          element: <Book />,
+          element: <Book />
         },
       ],  
     },
@@ -107,8 +108,8 @@ export default function App() {
           element: <Contact />,
         },  
         {
-          path: "book",
-          element: <Book />,
+          path: "managebook",
+          element: <ManageBook />,
         },
       ],  
     },
