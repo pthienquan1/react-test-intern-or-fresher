@@ -17,6 +17,7 @@ import { ExportOutlined, PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
 import * as XLSX from "xlsx";
 import { BsPencilFill } from "react-icons/bs";
+import BookViewDetail from "./BookViewDetail";
 
 const ManageBook = (props) => {
   const [mainText, setMainText] = useState("");
@@ -29,6 +30,8 @@ const ManageBook = (props) => {
   const [total, setTotal] = useState(10);
   const [sortField, setSortField] = useState("");
   const [sortOrder, setSortOrder] = useState("");
+  const [openViewBookDetail, setOpenViewBookDetail] = useState(false)
+  const [dataViewBookDetail, setDataViewBookDetail] = useState("");
   const renderHeaderBook = () => {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -62,10 +65,10 @@ const ManageBook = (props) => {
         return (
           <a
             href="#"
-            // onClick={() => {
-            //   setDataViewDetail(record);
-            //   setOpenViewDetail(true);
-            // }}
+            onClick={() => {
+              setDataViewBookDetail(record);
+              setOpenViewBookDetail(true);
+            }}
           >
             {record._id}
           </a>
@@ -250,6 +253,13 @@ const ManageBook = (props) => {
             );
           },
         }}
+      />
+
+      <BookViewDetail
+        openViewBookDetail={openViewBookDetail}
+        setOpenViewBookDetail={setOpenViewBookDetail}
+        dataViewBookDetail={dataViewBookDetail}
+        setDataViewBookDetail = {setDataViewBookDetail}
       />
     </div>
   );
