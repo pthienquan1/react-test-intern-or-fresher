@@ -35,7 +35,7 @@ const ManageBook = (props) => {
   const renderHeaderBook = () => {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span>Table list book</span>
+        <span style={{fontSize:"1.4rem" , fontWeight:"bold"}}>Table list book (Ấn vào ID của từng cuốn sách để xem chi tiết)</span>
         <span style={{ display: "flex", gap: 15 }}>
           <Button
             icon={<ExportOutlined />}
