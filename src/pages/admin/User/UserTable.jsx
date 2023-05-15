@@ -77,18 +77,13 @@ const UserTable = (props) => {
     {
       title: "Tên hiển thị",
       dataIndex: "fullName",
-      onFilter: (value, record) => record.fullName.indexOf(value) === 0,
-      sorter: (a, b) => a.fullName.length - b.fullName.length,
-      sortDirections: ["descend"],
-
+      sorter:true,
       width: "20%",
     },
     {
       title: "Email",
       dataIndex: "email",
-      onFilter: (value, record) => record.email.indexOf(value) === 0,
-      sorter: (a, b) => a.email.length - b.email.length,
-      sortDirections: ["descend"],
+      sorter:true,
     },
     {
       title: "Số điện thoại",
@@ -97,6 +92,7 @@ const UserTable = (props) => {
     {
       title: "Ngày cập nhật",
       dataIndex: "createdAt",
+      sorter:true,
       render: (createdAt) => moment(createdAt).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
@@ -140,12 +136,15 @@ const UserTable = (props) => {
   const [phone, setPhone] = useState("");
   const [dataViewDetail, setDataViewDetail] = useState("");
   const [openViewDetail, setOpenViewDetail] = useState(false);
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+
   const onClear = () => {
     setName("");
     setEmail("");
     setPhone("");
   };
-  const fetchUsers = async (searchFilter) => {
+  const fetchUsers = async (searchFilter,sortQuery) => {
     setIsLoading(true);
 
     let query = `current=${current}&pageSize=${pageSize}`;
@@ -153,6 +152,11 @@ const UserTable = (props) => {
     if (searchFilter) {
       query += searchFilter;
     }
+
+    if (sortQuery) {
+      query += sortQuery;
+    }
+    
 
     const res = await callFetchListUser(query);
 
@@ -163,6 +167,13 @@ const UserTable = (props) => {
 
     setIsLoading(false);
   };
+  const handleSort = (field, order) => {
+    setSortField(field);
+    setSortOrder(order);
+    
+    fetchUsers(null, `&sort=${order === "ascend" ? "" : "-"}${field}`);
+  };
+  
 
   // const handleSearch = (query) =>{
   //     fetchUser(query);
@@ -185,7 +196,7 @@ const UserTable = (props) => {
     fetchUsers(query);
   };
 
-  const onChange = (pagination) => {
+  const onChange = (pagination, filters, sorter) => {
     if (pagination && pagination.current !== current) {
       setCurrent(pagination.current);
     }
@@ -193,22 +204,21 @@ const UserTable = (props) => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-    console.log(">>CHECK", pagination);
+    if (sorter && sorter.field && sorter.order && (sorter.field !== sortField || sorter.order !== sortOrder)) {
+      handleSort(sorter.field, sorter.order);
+    } else if (!sorter || !sorter.field || !sorter.order) {
+      fetchUsers();
+    }
+    
+    
+    console.log(">>CHECK", pagination, 'sort',sorter);
   };
 
   useEffect(() => {
-    fetchUser();
+    fetchUsers();
   }, [current, pageSize]);
 
-  const fetchUser = async () => {
-    const query = `current=${current}&pageSize=${pageSize}`;
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      setListUser(res.data.result);
-      setTotal(res.data.meta.total);
-    }
-    setIsLoading(false);
-  };
+ 
 
   const handleExportData = () => {
     if (listUser.length > 0) {
@@ -341,7 +351,7 @@ const UserTable = (props) => {
       <UserModelCreate
         openModalCreate={openModalCreate}
         setOpenModalCreate={setOpenModalCreate}
-        fetchUser={fetchUser}
+        fetchUsers={fetchUsers}
       />
     </>
   );
