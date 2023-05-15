@@ -156,19 +156,19 @@ const ManageBook = (props) => {
       query += `&category=/${category}/i`;
     }
 
-    fetchUsers(query);
+    fetchBooks(query);
   };
   const onClear = () => {
-    setBook("");
+    setMainText("");
     setAuthor("");
-    setType("");
+    setCategory("");
   };
 
   useEffect(() => {
     fetchBooks();
   }, [current, pageSize]);
 
-  const onChange = (pagination, sorter) => {
+   const onChange = (pagination, filters, sorter) => {
     if (pagination && pagination.current !== current) {
       setCurrent(pagination.current);
     }
@@ -176,17 +176,16 @@ const ManageBook = (props) => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-    if (
-      sorter &&
-      sorter.field &&
-      sorter.order &&
-      (sorter.field !== sortField || sorter.order !== sortOrder)
-    ) {
+    if (sorter && sorter.field && sorter.order && (sorter.field !== sortField || sorter.order !== sortOrder)) {
       handleSort(sorter.field, sorter.order);
-    } else if (!sorter.field || !sorter || !sorter.order) {
+    } else if (!sorter || !sorter.field || !sorter.order) {
       fetchBooks();
     }
+    
+    
+    console.log(">>CHECK", pagination, 'sort',sorter);
   };
+
   return (
     <div>
       <div className="admin-container">
@@ -196,7 +195,7 @@ const ManageBook = (props) => {
             type="text"
             placeholder="Input book"
             value={mainText}
-            onChange={(e) => setBook(e.target.value)}
+            onChange={(e) => setMainText(e.target.value)}
           ></input>
         </div>
 
@@ -216,7 +215,7 @@ const ManageBook = (props) => {
             type="text"
             placeholder="Input phone number"
             value={category}
-            onChange={(e) => setType(e.target.value)}
+            onChange={(e) => setCategory(e.target.value)}
           ></input>
         </div>
 
@@ -236,6 +235,7 @@ const ManageBook = (props) => {
         columns={columns}
         title={renderHeaderBook}
         rowKey="_id"
+        loading={isLoading}
         onChange={onChange}
         pagination={{
           current: current,
