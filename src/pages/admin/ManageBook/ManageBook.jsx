@@ -61,6 +61,9 @@ const ManageBook = (props) => {
           <BookModalCreate 
             openModalCreate={openModalCreate}
             setOpenModalCreate={setOpenModalCreate}
+            fetchBooks={fetchBooks}
+            listBook={listBook}
+            setListBook={setListBook}
           />
         </span>
       </div>

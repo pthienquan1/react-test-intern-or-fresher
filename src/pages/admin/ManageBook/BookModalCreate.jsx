@@ -14,7 +14,7 @@ import {
 } from "antd";
 // import { useForm } from "antd/es/form/Form";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callListCategory, callUploadBookImg } from "../../../services/api";
+import { callCreateBook, callListCategory, callUploadBookImg } from "../../../services/api";
 const BookModalCreate = (props) => {
   const { openModalCreate, setOpenModalCreate } = props;
   const [isSubmit, setIsSubmit] = useState(false);
@@ -129,7 +129,49 @@ const BookModalCreate = (props) => {
     console.log("Check values", values);
     console.log("check thumbnail:", dataThumbnail);
     console.log("Check slider:", dataSlider);
-    return;
+    if(dataThumbnail.length === 0) {
+      notification.error({
+        message: "Lỗi xảy ra",
+        description: "Chưa upload ảnh nào cả",
+      })
+    }
+    if(dataSlider.length === 0){
+      notification.error({
+        message:"Lỗi xảy ra",
+        description:"Chưa upload ảnh nào cả",
+      })
+    }
+    const {mainText,author,price,sold,quantity,category} = values;
+   
+    const thumbnail = dataThumbnail[0].name;
+    const slider = dataSlider.map(item => item.name)
+    const res = await callCreateBook(thumbnail,slider,mainText,author,price,sold,quantity,category);
+    setIsSubmit(true);
+    if(res && res.data){
+      form.resetFields();
+      setOpenModalCreate(false);
+      setDataThumbnail([]);
+      setDataSlider([]);
+      message.success("Tạo sách thành công !");
+      await props.fetchBooks();
+      const newBookIndex = props.listBook.findIndex((book) => book._id === res.data._id);
+
+      // Nếu sách không tồn tại trong danh sách, thêm sách vào đầu danh sách
+      if (newBookIndex === -1) {
+        props.setListBook([res.data, ...props.listBook]);
+      } else {
+        // Nếu sách đã tồn tại trong danh sách, cập nhật thông tin sách
+        const updatedList = [...props.listBook];
+        updatedList[newBookIndex] = res.data;
+        props.setListBook(updatedList);
+      }
+    }
+    else{
+      notification.error({
+          message:"Lỗi rồi",
+          description:res.message,
+      })
+    }
   };
   return (
     <div>
@@ -154,7 +196,7 @@ const BookModalCreate = (props) => {
             <Col span={12}>
               <Form.Item
                 label="Tên sách"
-                name="mainTex"
+                name="mainText"
                 labelCol={{ span: 24 }}
                 rules={[{ required: true, message: "Vui lòng nhập tên sách" }]}
               >
