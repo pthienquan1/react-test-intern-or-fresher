@@ -1,82 +1,136 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Button,
-  Modal,
+  Col,
+  Divider,
   Form,
   Input,
-  message,
-  notification,
-  Divider,
-  Cascader,
   InputNumber,
-  Select,
-  Space,
+  message,
+  Modal,
+  notification,
   Row,
-  Col,
+  Select,
   Upload,
 } from "antd";
-import { useForm } from "antd/es/form/Form";
+// import { useForm } from "antd/es/form/Form";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callListCategory } from "../../../services/api";
+import { callListCategory, callUploadBookImg } from "../../../services/api";
 const BookModalCreate = (props) => {
   const { openModalCreate, setOpenModalCreate } = props;
   const [isSubmit, setIsSubmit] = useState(false);
   const [listCategory, setListCategory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingSlider, setLoadingSlider] = useState(false);
-  const [form] = useForm();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [dataThumbnail, setDataThumbnail] = useState([]);
+  const [dataSlider, setDataSlider] = useState([]);
+  const [imageUrl, setImageUrl] = useState("");
+  const [form] = Form.useForm();
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
+    reader.addEventListener("load", () => callback(reader.result));
     reader.readAsDataURL(img);
-};
+  };
 
-  useEffect(() =>{
-      const fetchCategory = async () =>{
-        const res = await callListCategory();
-        if(res && res.data){
-          const d = res.data.map(item =>{
-            return {label:item,
-            value:item} 
-          })
-          setListCategory(d);
-        }
+  useEffect(() => {
+    const fetchCategory = async () => {
+      const res = await callListCategory();
+      if (res && res.data) {
+        const d = res.data.map((item) => {
+          return { label: item, value: item };
+        });
+        setListCategory(d);
       }
-      fetchCategory();
-  },[])
+    };
+    fetchCategory();
+  }, []);
+
+  const handlePreview = async (file) => {
+    getBase64(file.originFileObj, (url) => {
+      setPreviewImage(url);
+      setPreviewOpen(true);
+      setPreviewTitle(
+        file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+      );
+    });
+  };
+  const handleCancel = () => setPreviewOpen(false);
 
   const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
+      message.error("You can only upload JPG/PNG file!");
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
+      message.error("Image must smaller than 2MB!");
     }
     return isJpgOrPng && isLt2M;
   };
 
   const handleChange = (info, type) => {
-    if (info.file.status === 'uploading') {
+    if (info.file.status === "uploading") {
       type ? setLoadingSlider(true) : setLoading(true);
       return;
     }
-    if (info.file.status === 'done') {
+    if (info.file.status === "done") {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj , (url) => {
+      getBase64(info.file.originFileObj, (url) => {
         type ? setLoadingSlider(false) : setLoading(false);
         setImageUrl(url);
       });
     }
   };
 
-  const handleUpLoadFile = ({file, onSuccess, onError}) =>{
-    setTimeout(() =>{
-      onSuccess("OK");
-    },2000)
+  const handleUpLoadFileThumbnail = async ({ file, onSuccess, onError }) => {
+    const res = await callUploadBookImg(file);
+    if (res && res.data) {
+      setDataThumbnail([
+        {
+          name: res.data.fileUploaded,
+          uid: file.uid,
+        },
+      ]);
+      onSuccess("ok");
+    } else {
+      onError("Đã có lỗi khi upload file");
+    }
+  };
+
+  const handleUploadFileSlider = async ({ file, onSuccess, onError }) => {
+    const res = await callUploadBookImg(file);
+    if (res && res.data) {
+      //copy previous state => upload multiple images
+      setDataSlider((dataSlider) => [
+        ...dataSlider,
+        {
+          name: res.data.fileUploaded,
+          uid: file.uid,
+        },
+      ]);
+      onSuccess("ok");
+    } else {
+      onError("Đã có lỗi khi upload file");
+    }
+  };
+
+  const handleRemoveFile = (file,type) =>{
+      if(type === 'thumbnail'){
+        setDataThumbnail([])
+      }
+      if(type === 'slider'){
+        const newSlider = dataSlider.filter(x => x.uid !== file.uid);
+        setDataSlider(newSlider); 
+      }
   }
+  const onFinish = async (values) => {
+    console.log("Check values", values);
+    console.log("check thumbnail:", dataThumbnail);
+    console.log("Check slider:", dataSlider);
+    return;
+  };
   return (
     <div>
       <Modal
@@ -88,16 +142,14 @@ const BookModalCreate = (props) => {
         width={"50vw"}
         onText={"Tạo mới"}
         cancelText={"Hủy"}
-        onCancel={() => setOpenModalCreate(false)}
+        onCancel={() => {
+          form.resetFields();
+          setOpenModalCreate(false);
+        }}
         confirmLoading={isSubmit}
       >
         <Divider />
-        <Form
-          name="basic"
-          form={form}
-          // onFinish={onFinish}
-          autoComplete="off"
-        >
+        <Form name="basic" form={form} onFinish={onFinish} autoComplete="off">
           <Row gutter={15}>
             <Col span={12}>
               <Form.Item
@@ -149,10 +201,10 @@ const BookModalCreate = (props) => {
                 rules={[{ required: true, message: "Vui lòng nhập thể loại!" }]}
               >
                 <Select
-                  
+                  // defaultValue={null}
                   showSearch
                   allowClear
-                   onChange={handleChange}
+                  // onChange={handleChange}
                   options={listCategory}
                 />
               </Form.Item>
@@ -176,11 +228,7 @@ const BookModalCreate = (props) => {
                 name="sold"
                 rules={[{ required: true, message: "Vui lòng nhập giá tiền!" }]}
               >
-                <InputNumber
-                  min={0}
-                  style={{ width: "100%" }}
-                  
-                />
+                <InputNumber min={0} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
 
@@ -196,9 +244,11 @@ const BookModalCreate = (props) => {
                   className="avatar-uploader"
                   maxCount={1}
                   multiple={false}
-                  customRequest={handleUpLoadFile}
+                  customRequest={handleUpLoadFileThumbnail}
                   beforeUpload={beforeUpload}
                   onChange={handleChange}
+                  onCancel={handleRemoveFile}
+                  onPreview={handlePreview}
                 >
                   <div>
                     {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -219,9 +269,11 @@ const BookModalCreate = (props) => {
                   name="slider"
                   listType="picture-card"
                   className="avatar-uploader"
-                  customRequest={handleUpLoadFile}
+                  customRequest={handleUploadFileSlider}
                   beforeUpload={beforeUpload}
                   onChange={(info) => handleChange(info, "slider")}
+                  onCancel={(info) => handleRemoveFile(info,"slider")}
+                  onPreview={handlePreview}
                 >
                   <div>
                     {loadingSlider ? <LoadingOutlined /> : <PlusOutlined />}
@@ -232,6 +284,15 @@ const BookModalCreate = (props) => {
             </Col>
           </Row>
         </Form>
+        <Modal
+          open={previewOpen}
+          title={previewTitle}
+          footer={null}
+          onCancel={handleCancel}
+          width={"60vw"}
+        >
+          <img alt="example" style={{ width: "100%" }} src={previewImage} />
+        </Modal>
       </Modal>
     </div>
   );
