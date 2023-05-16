@@ -18,6 +18,7 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { callListCategory } from "../../../services/api";
 const BookModalCreate = (props) => {
   const { openModalCreate, setOpenModalCreate } = props;
   const [isSubmit, setIsSubmit] = useState(false);
@@ -25,14 +26,57 @@ const BookModalCreate = (props) => {
   const [loading, setLoading] = useState(false);
   const [loadingSlider, setLoadingSlider] = useState(false);
   const [form] = useForm();
-  const selectAfter = (
-    <Select style={{ width: 60 }}>
-      <Option value="USD">$</Option>
-      <Option value="EUR">€</Option>
-      <Option value="GBP">£</Option>
-      <Option value="CNY">¥</Option>
-    </Select>
-  );
+  const getBase64 = (img, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+};
+
+  useEffect(() =>{
+      const fetchCategory = async () =>{
+        const res = await callListCategory();
+        if(res && res.data){
+          const d = res.data.map(item =>{
+            return {label:item,
+            value:item} 
+          })
+          setListCategory(d);
+        }
+      }
+      fetchCategory();
+  },[])
+
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
+  const handleChange = (info, type) => {
+    if (info.file.status === 'uploading') {
+      type ? setLoadingSlider(true) : setLoading(true);
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj , (url) => {
+        type ? setLoadingSlider(false) : setLoading(false);
+        setImageUrl(url);
+      });
+    }
+  };
+
+  const handleUpLoadFile = ({file, onSuccess, onError}) =>{
+    setTimeout(() =>{
+      onSuccess("OK");
+    },2000)
+  }
   return (
     <div>
       <Modal
@@ -105,10 +149,10 @@ const BookModalCreate = (props) => {
                 rules={[{ required: true, message: "Vui lòng nhập thể loại!" }]}
               >
                 <Select
-                  defaultValue={null}
+                  
                   showSearch
                   allowClear
-                  //  onChange={handleChange}
+                   onChange={handleChange}
                   options={listCategory}
                 />
               </Form.Item>
@@ -135,7 +179,7 @@ const BookModalCreate = (props) => {
                 <InputNumber
                   min={0}
                   style={{ width: "100%" }}
-                  defaultValue={0}
+                  
                 />
               </Form.Item>
             </Col>
@@ -152,9 +196,9 @@ const BookModalCreate = (props) => {
                   className="avatar-uploader"
                   maxCount={1}
                   multiple={false}
-                  // customRequest={handleUploadFile}
-                  // beforeUpload={beforeUpload}
-                  // onChange={handleChange}
+                  customRequest={handleUpLoadFile}
+                  beforeUpload={beforeUpload}
+                  onChange={handleChange}
                 >
                   <div>
                     {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -175,9 +219,9 @@ const BookModalCreate = (props) => {
                   name="slider"
                   listType="picture-card"
                   className="avatar-uploader"
-                  // customRequest={handleUploadFile}
-                  // beforeUpload={beforeUpload}
-                  // onChange={(info) => handleChange(info, "slider")}
+                  customRequest={handleUpLoadFile}
+                  beforeUpload={beforeUpload}
+                  onChange={(info) => handleChange(info, "slider")}
                 >
                   <div>
                     {loadingSlider ? <LoadingOutlined /> : <PlusOutlined />}

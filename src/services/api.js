@@ -52,3 +52,6 @@ export const callFetchListBook = (query) =>{
   return axios.get(`/api/v1/book?${query}`)
 }
 // http://localhost:8080/api/v1/database/category
+export const callListCategory = () =>{
+  return axios.get('/api/v1/database/category')
+}
