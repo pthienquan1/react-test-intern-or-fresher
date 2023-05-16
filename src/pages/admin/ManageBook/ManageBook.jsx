@@ -18,6 +18,7 @@ import moment from "moment";
 import * as XLSX from "xlsx";
 import { BsPencilFill } from "react-icons/bs";
 import BookViewDetail from "./BookViewDetail";
+import BookModalCreate from "./BookModalCreate";
 
 const ManageBook = (props) => {
   const [mainText, setMainText] = useState("");
@@ -32,6 +33,11 @@ const ManageBook = (props) => {
   const [sortOrder, setSortOrder] = useState("");
   const [openViewBookDetail, setOpenViewBookDetail] = useState(false)
   const [dataViewBookDetail, setDataViewBookDetail] = useState("");
+  const [openModalCreate, setOpenModalCreate] = useState(false)
+  const handleOpenModalCreate = () => {
+    setOpenModalCreate(true);
+  };
+
   const renderHeaderBook = () => {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -48,10 +54,14 @@ const ManageBook = (props) => {
           <Button
             icon={<PlusOutlined />}
             type="primary"
-            //     onClick={handleOpenModalCreate}
+                onClick={handleOpenModalCreate}
           >
             Thêm mới
           </Button>
+          <BookModalCreate 
+            openModalCreate={openModalCreate}
+            setOpenModalCreate={setOpenModalCreate}
+          />
         </span>
       </div>
     );
