@@ -19,6 +19,7 @@ import * as XLSX from "xlsx";
 import { BsPencilFill } from "react-icons/bs";
 import BookViewDetail from "./BookViewDetail";
 import BookModalCreate from "./BookModalCreate";
+import BookUpdate from "./BookUpdate";
 
 const ManageBook = (props) => {
   const [mainText, setMainText] = useState("");
@@ -31,9 +32,14 @@ const ManageBook = (props) => {
   const [total, setTotal] = useState(10);
   const [sortField, setSortField] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [openViewBookDetail, setOpenViewBookDetail] = useState(false)
+  const [openViewBookDetail, setOpenViewBookDetail] = useState(false);
   const [dataViewBookDetail, setDataViewBookDetail] = useState("");
-  const [openModalCreate, setOpenModalCreate] = useState(false)
+  const [openModalCreate, setOpenModalCreate] = useState(false);
+
+  //Update
+  const [openModalUpdate, setOpenModalUpdate] = useState(false);
+  const [dataUpdate, setDataUpdate] = useState(null);
+
   const handleOpenModalCreate = () => {
     setOpenModalCreate(true);
   };
@@ -41,7 +47,9 @@ const ManageBook = (props) => {
   const renderHeaderBook = () => {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span style={{fontSize:"1.4rem" , fontWeight:"bold"}}>Table list book (Ấn vào ID của từng cuốn sách để xem chi tiết)</span>
+        <span style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
+          Table list book (Ấn vào ID của từng cuốn sách để xem chi tiết)
+        </span>
         <span style={{ display: "flex", gap: 15 }}>
           <Button
             icon={<ExportOutlined />}
@@ -54,16 +62,23 @@ const ManageBook = (props) => {
           <Button
             icon={<PlusOutlined />}
             type="primary"
-                onClick={handleOpenModalCreate}
+            onClick={handleOpenModalCreate}
           >
             Thêm mới
           </Button>
-          <BookModalCreate 
+          <BookModalCreate
             openModalCreate={openModalCreate}
             setOpenModalCreate={setOpenModalCreate}
             fetchBooks={fetchBooks}
             listBook={listBook}
             setListBook={setListBook}
+          />
+
+          <BookUpdate
+            openModalUpdate={openModalUpdate}
+            setOpenModalUpdate={setOpenModalUpdate}
+            dataUpdate={dataUpdate}
+            setDataUpdate={setDataUpdate}
           />
         </span>
       </div>
@@ -124,10 +139,10 @@ const ManageBook = (props) => {
 
             <BsPencilFill
               style={{ color: "blue", marginLeft: "20px", cursor: "pointer" }}
-              //   onClick={() => {
-              //     setOpenModalUpdate(true);
-              //     setDataUpdate(record);
-              //   }}
+              onClick={() => {
+                setOpenModalUpdate(true);
+                setDataUpdate(record);
+              }}
             />
           </>
         );
@@ -184,7 +199,7 @@ const ManageBook = (props) => {
     fetchBooks();
   }, [current, pageSize]);
 
-   const onChange = (pagination, filters, sorter) => {
+  const onChange = (pagination, filters, sorter) => {
     if (pagination && pagination.current !== current) {
       setCurrent(pagination.current);
     }
@@ -192,14 +207,18 @@ const ManageBook = (props) => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-    if (sorter && sorter.field && sorter.order && (sorter.field !== sortField || sorter.order !== sortOrder)) {
+    if (
+      sorter &&
+      sorter.field &&
+      sorter.order &&
+      (sorter.field !== sortField || sorter.order !== sortOrder)
+    ) {
       handleSort(sorter.field, sorter.order);
     } else if (!sorter || !sorter.field || !sorter.order) {
       fetchBooks();
     }
-    
-    
-    console.log(">>CHECK", pagination, 'sort',sorter);
+
+    console.log(">>CHECK", pagination, "sort", sorter);
   };
 
   return (
@@ -272,7 +291,7 @@ const ManageBook = (props) => {
         openViewBookDetail={openViewBookDetail}
         setOpenViewBookDetail={setOpenViewBookDetail}
         dataViewBookDetail={dataViewBookDetail}
-        setDataViewBookDetail = {setDataViewBookDetail}
+        setDataViewBookDetail={setDataViewBookDetail}
       />
     </div>
   );
