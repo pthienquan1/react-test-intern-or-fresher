@@ -14,14 +14,22 @@ import {
   Row,
   Select,
   Upload,
- 
 } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callListCategory, callUploadBookImg } from "../../../services/api";
+import {
+  callListCategory,
+  callUpdateBook,
+  callUploadBookImg,
+} from "../../../services/api";
 const BookUpdate = (props) => {
   const [isSubmitUpdate, setIsSubmitUpdate] = useState(false);
-  const { openModalUpdate, setOpenModalUpdate, dataUpdate, setDataUpdate } =
-    props;
+  const {
+    openModalUpdate,
+    setOpenModalUpdate,
+    dataUpdate,
+    setDataUpdate,
+    fetchBooks,
+  } = props;
   const [listCategory, setListCategory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingSlider, setLoadingSlider] = useState(false);
@@ -185,8 +193,55 @@ const BookUpdate = (props) => {
     }
   };
 
-  const onFinish = () => {};
+  const onFinish = async (values) => {
+    if (dataThumbnail.length === 0) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: "Ảnh thumbnail không được để trống",
+      });
+      return;
+    }
 
+    if (dataSlider.length === 0) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: "Ảnh slider không được để trống",
+      });
+      return;
+    }
+
+    const { _id, mainText, author, price, sold, quantity, category } = values;
+    const thumbnail = dataThumbnail[0].name;
+    const slider = dataSlider.map((item) => item.name);
+    setIsSubmitUpdate(true);
+
+    const res = await callUpdateBook(
+      _id,
+      thumbnail,
+      slider,
+      mainText,
+      author,
+      price,
+      sold,
+      quantity,
+      category
+    );
+    console.log(res);
+    if (res) {
+      message.success("Update thành công");
+      form.resetFields();
+      setDataSlider([]);
+      setDataThumbnail([]);
+      setInitForm(null);
+      setOpenModalUpdate(false);
+      await fetchBooks();
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: res.message,
+      });
+    }
+  };
   return (
     <div>
       <Modal
@@ -303,9 +358,8 @@ const BookUpdate = (props) => {
                   customRequest={handleUpLoadFileThumbnail}
                   beforeUpload={beforeUpload}
                   onChange={handleChange}
-                  onCancel={handleRemoveFile}
                   onPreview={handlePreview}
-                  fileList={dataThumbnail}
+                  onRemove={(file) => handleRemoveFile(file, "thumbnail")}
                   defaultFileList={initForm?.thumbnail?.fileList ?? []}
                 >
                   <div>
@@ -330,16 +384,20 @@ const BookUpdate = (props) => {
                   customRequest={handleUploadFileSlider}
                   beforeUpload={beforeUpload}
                   onChange={(info) => handleChange(info, "slider")}
-                  onCancel={(info) => handleRemoveFile(info, "slider")}
+                  onRemove={(file) => handleRemoveFile(file, "slider")}
                   onPreview={handlePreview}
                   defaultFileList={initForm?.slider?.fileList ?? []}
-                  fileList={dataSlider}
                 >
                   <div>
                     {loadingSlider ? <LoadingOutlined /> : <PlusOutlined />}
                     <div style={{ marginTop: 8 }}>Upload</div>
                   </div>
                 </Upload>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="ID" name="_id" labelCol={{ span: 24 }} hidden>
+                <Input />
               </Form.Item>
             </Col>
           </Row>

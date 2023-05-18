@@ -79,6 +79,7 @@ const ManageBook = (props) => {
             setOpenModalUpdate={setOpenModalUpdate}
             dataUpdate={dataUpdate}
             setDataUpdate={setDataUpdate}
+            fetchBooks={fetchBooks}
           />
         </span>
       </div>

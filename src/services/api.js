@@ -73,3 +73,15 @@ export const callUploadBookImg = (fileImg) =>{
  export const callCreateBook = (thumbnail,slider,mainText,author,price,sold,quantity,category) =>{
    return axios.post('/api/v1/book', {thumbnail,slider,mainText,author,price,sold,quantity,category});
  }
+
+ export const callUpdateBook = (id,thumbnail,slider,mainText,author,price,sold,quantity,category) => {
+  return axios.put(`/api/v1/book/${id}`, { thumbnail,slider,mainText,author,price,sold,quantity,category })
+    .then(res => {
+      console.log("res:",res);
+      return res.data;
+    })
+    .catch(error => {
+      console.error("lỗi:",error);
+      throw error;
+    });
+};
