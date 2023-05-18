@@ -85,3 +85,7 @@ export const callUploadBookImg = (fileImg) =>{
       throw error;
     });
 };
+
+export const callDeleteBook = (id) => {
+  return axios.delete(`/api/v1/book/${id}`);
+};

@@ -8,7 +8,7 @@ import {
   notification,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { callFetchListBook } from "../../../services/api";
+import { callDeleteBook, callFetchListBook } from "../../../services/api";
 
 import { FaTrash } from "react-icons/fa";
 
@@ -85,7 +85,7 @@ const ManageBook = (props) => {
       </div>
     );
   };
-  const columns = [
+  const columnsBooks = [
     {
       title: "ID",
       dataIndex: "_id",
@@ -134,10 +134,17 @@ const ManageBook = (props) => {
       render: (text, record, index) => {
         return (
           <>
-            <span style={{ marginLeft: "20px", cursor: "pointer" }}>
-              <FaTrash style={{ color: "red" }} />
-            </span>
-
+            <Popconfirm 
+            placement="rightTop"
+              title={"Xác nhận xóa sách này"}
+              description={"Bạn có chắc chắn muốn xóa quyển sách này không?"}
+              onConfirm={() => handleDeleteBook(record._id)}
+              okText="Xóa"
+              cancelText="Quay lại">
+              <span style={{ marginLeft: "20px", cursor: "pointer" }}>
+                <FaTrash style={{ color: "red" }} />
+              </span>
+            </Popconfirm>
             <BsPencilFill
               style={{ color: "blue", marginLeft: "20px", cursor: "pointer" }}
               onClick={() => {
@@ -151,6 +158,19 @@ const ManageBook = (props) => {
     },
   ];
 
+  const handleDeleteBook = async (id) =>{
+    const res = await callDeleteBook(id);
+    if(res && res.data){
+      message.success("Xóa thành công");
+       fetchBooks();
+    }
+    else{
+        notification.error({
+          message:"có lỗi rồi",
+          description:res.message
+        })
+    }
+  }
   const fetchBooks = async (searchFilter, sortQuery) => {
     let query = `current=${current}&pageSize=${pageSize}`;
     if (searchFilter) {
@@ -215,10 +235,8 @@ const ManageBook = (props) => {
       (sorter.field !== sortField || sorter.order !== sortOrder)
     ) {
       handleSort(sorter.field, sorter.order);
-    } else if (!sorter || !sorter.field || !sorter.order) {
-      fetchBooks();
-    }
-
+    } 
+   
     console.log(">>CHECK", pagination, "sort", sorter);
   };
 
@@ -266,9 +284,9 @@ const ManageBook = (props) => {
       </div>
 
       <Table
-        className="lstBook"
+        className="def"
         dataSource={listBook}
-        columns={columns}
+        columns={columnsBooks}
         title={renderHeaderBook}
         rowKey="_id"
         loading={isLoading}
