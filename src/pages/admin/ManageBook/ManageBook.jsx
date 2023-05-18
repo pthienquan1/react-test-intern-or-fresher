@@ -54,7 +54,7 @@ const ManageBook = (props) => {
           <Button
             icon={<ExportOutlined />}
             type="primary"
-            // onClick={() => handleExportData()}
+            onClick={() => handleExportData()}
           >
             Export{" "}
           </Button>
@@ -240,6 +240,14 @@ const ManageBook = (props) => {
     console.log(">>CHECK", pagination, "sort", sorter);
   };
 
+  const handleExportData = () => {
+    if (listBook.length > 0) {
+      const worksheet = XLSX.utils.json_to_sheet(listBook);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "ExportFile.xlsx");
+    }
+  };
   return (
     <div>
       <div className="admin-container">
